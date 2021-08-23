@@ -3,7 +3,7 @@ class CreateReviews < ActiveRecord::Migration[6.1]
     create_table :reviews do |t|
       t.string :title
       t.string :content
-      t.integer :likes
+      t.integer :likes, :default => 0
 
       t.timestamps
     end
