@@ -14,10 +14,33 @@ class Review {
         .then(json => Review.renderReviews(json))
     }
 
+    static likeReview(e){
+        this.likes += 1
+
+        let params = {
+            review: {
+                likes: this.likes
+            }
+        }
+        
+        let configObj = {
+            method: "PATCH",
+            headers: {
+                "Accept": "application/json",
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(params)
+        }
+
+        fetch(`http://localhost:3000/reviews/${this.id}`, configObj)
+        .then(resp => resp.json())
+        .then(reviewsInfo => Review.renderReviews(reviewsInfo))
+    }
+
     static renderReviews(reviewsInfo){
         reviewsInfo.forEach(review => {
             let div = document.createElement("div")
-            let h3 = document.createElement("h3")
+            let h4 = document.createElement("h4")
             let p = document.createElement("p")
             let likeButton = document.createElement('button')
             let ul = document.createElementNS("ul")
@@ -39,19 +62,21 @@ class Review {
             })
 
             div.id = review.id
-            h3.innerText = review.title
+            div.style.padding = "20px"
+            div.className = "card"
+            h4.innerText = review.title
             p.innerText = review.content
             likeButton.innerText = "❣"
-            likeButton.addEventListener('click', likeReview.bind(review))
+            likeButton.addEventListener('click', Review.likeReview.bind(review))
 
-            div.appendChild(h3)
+            div.appendChild(h4)
             div.appendChild(p)
             div.appendChild(likeButton)
             reviewComments.forEach(li => ul.appendChild(li))
             div.appendChild(ul)
 
             reviewsContainer().appendChild(div)
-
+        
         })
     }
 }

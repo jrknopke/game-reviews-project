@@ -3,7 +3,7 @@
 let reviewsContainer = () => document.getElementById("reviews-container")
 
 const startProgram = () => {
-
+    Review.fetchReviews
 }
 
 
