@@ -16,7 +16,16 @@ class Review {
 
     static renderReviews(reviewsInfo){
         reviewsInfo.forEach(review => {
-            
+            let div = document.createElement("div")
+            let h3 = document.createElement("h3")
+            let p = document.createElement("p")
+            let likeButton = document.createElement('button')
+
+            div.id = review.id
+            h3.innerText = review.title
+            p.innerText = review.content
+            likeButton.innerText = "❣"
+            likeButton.addEventListener('click', likeReview)
         })
     }
 }
