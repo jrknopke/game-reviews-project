@@ -21,8 +21,9 @@ class ReviewsController < ApplicationController
         if review.save
             render json: Review.all.to_json(:include => :comments)
         else
-            render json:
+            render json: {error: "Error"}
         end
+
     end
 
     def destroy
