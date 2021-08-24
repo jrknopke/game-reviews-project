@@ -1,5 +1,7 @@
 class Review {
 
+    static all = []
+
     constructor(id, title, content, likes, comments){
         this.id = id
         this.title = title
@@ -14,6 +16,36 @@ class Review {
         .then(json => Review.renderReviews(json))
     }
 
+    static createReview(e){
+        e.preventDefault();
+        let title = e.target.children[0].value
+        let content = e.target.children[1].value
+
+        let params = {
+            review:{
+                title: title,
+                content: content
+            }
+        }
+
+        let configObj = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(params)
+        }
+
+        fetch("http://localhost:3000/reviews", configObj)
+        .then(resp => resp.json)
+        .then(json => {
+            e.target.children[0].value = ""
+            e.target.children[1].value = ""
+            Review.renderReviews(json)
+        })
+    }
+
 
     static renderReviews(reviewsInfo){
         clearContainer(reviewsContainer())
@@ -24,20 +56,15 @@ class Review {
             let likeButton = document.createElement('button')
             let ul = document.createElement("ul")
             let likeCounter = document.createElement("p")
+            let deleteButton = document.createElement("button")
 
             let reviewComments = review.comments.map(comment => {
                 let li = document.createElement("li")
                 let div = document.createElement("div")
                 let commentContent = document.createElement("p")
-                let commentLikes = document.createElement("p")
-                let likeButton = document.createElement("button")
                 likeCounter.innerText = review.likes
                 commentContent.innerText = comment.content
-                commentLikes.innerText = comment.likes
-                likeButton.innerText = "❣"
                 div.appendChild(commentContent)
-                div.appendChild(commentLikes)
-                div.appendChild(likeButton)
                 li.appendChild(div)
                 return li
             })
@@ -51,10 +78,14 @@ class Review {
             likeButton.innerText = "❣"
             likeButton.addEventListener('click', Review.likeReview.bind(review))
 
+            deleteButton.innerText = "Delete Review"
+            deleteButton.addEventListener("click", deleteReview.bind(review))
+
             div.appendChild(h4)
             div.appendChild(p)
             div.appendChild(likeCounter)
             div.appendChild(likeButton)
+            div.appendChild(deleteButton)
             reviewComments.forEach(li => ul.appendChild(li))
             div.appendChild(ul)
 
@@ -84,6 +115,19 @@ class Review {
         fetch(`http://localhost:3000/reviews/${this.id}`, configObj)
         .then(resp => resp.json())
         .then(reviewsInfo => Review.renderReviews(reviewsInfo))
+    }
+
+    static deleteReview(e){
+        let configObj = {
+            method: "DELETE",
+            headers: {
+                "Accept": "application/json",
+                "Content-type": "application/json"
+            }
+        }
+        fetch(`http://localhost:3000/reviews/${this.id}`, configObj)
+        .then(resp => resp.json())
+        .then(json => Review.renderReviews(json))
     }
 
 }
