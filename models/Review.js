@@ -1,7 +1,5 @@
 class Review {
 
-    static all = []
-
     constructor(id, title, content, likes, comments){
         this.id = id
         this.title = title
@@ -13,7 +11,10 @@ class Review {
     static fetchReviews(){
         fetch("http://localhost:3000/reviews")
         .then(resp => resp.json())
-        .then(json => Review.renderReviews(json))
+        .then(json => {
+            // debugger
+            Review.renderReviews(json)
+        })
     }
 
     static createReview(e){
@@ -46,8 +47,12 @@ class Review {
         })
     }
 
+    static createComment(){
+
+    }
 
     static renderReviews(reviewsInfo){
+        // debugger
         clearContainer(reviewsContainer())
         reviewsInfo.forEach(review => {
             let div = document.createElement("div")
@@ -57,29 +62,31 @@ class Review {
             let ul = document.createElement("ul")
             let likeCounter = document.createElement("p")
             let deleteButton = document.createElement("button")
-
-            let reviewComments = review.comments.map(comment => {
-                let li = document.createElement("li")
-                let div = document.createElement("div")
-                let commentContent = document.createElement("p")
-                likeCounter.innerText = review.likes
-                commentContent.innerText = comment.content
-                div.appendChild(commentContent)
-                li.appendChild(div)
-                return li
-            })
+            let form = document.createElement("form")
+            let input = document.createElement("input")
+            let submitComment = document.createElement("button")
+            let reviewComments = Comment.renderComments(review.comments)
 
             div.id = review.id
             div.style.padding = "20px"
             div.className = "card"
             h4.innerText = review.title
             p.innerText = review.content
+            likeCounter.innerText = review.likes
 
             likeButton.innerText = "❣"
             likeButton.addEventListener('click', Review.likeReview.bind(review))
 
             deleteButton.innerText = "Delete Review"
-            deleteButton.addEventListener("click", deleteReview.bind(review))
+            deleteButton.addEventListener("click", Review.deleteReview.bind(review))
+
+            input.type = "text"
+            input.placeholder = "Type comment here"
+            submitComment.type = "submit"
+            submitComment.innerText = "Submit"
+            form.addEventListener("submit", Review.createComment.bind(review))
+            form.appendChild(input)
+            form.appendChild(submitComment)
 
             div.appendChild(h4)
             div.appendChild(p)
@@ -88,13 +95,14 @@ class Review {
             div.appendChild(deleteButton)
             reviewComments.forEach(li => ul.appendChild(li))
             div.appendChild(ul)
+            div.appendChild(form)
 
             reviewsContainer().appendChild(div)
         
         })
     }
 
-    static likeReview(e){
+    static likeReview(event){
         this.likes += 1
 
         let params = {
@@ -117,7 +125,7 @@ class Review {
         .then(reviewsInfo => Review.renderReviews(reviewsInfo))
     }
 
-    static deleteReview(e){
+    static deleteReview(event){
         let configObj = {
             method: "DELETE",
             headers: {

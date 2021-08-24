@@ -1,5 +1,3 @@
-// let titleInput = () => document.getElementById("title")
-// let titleInput = () => document.getElementById("title")
 let reviewsContainer = () => document.getElementById("reviews-container")
 
 const clearContainer = (element) => {
@@ -11,8 +9,8 @@ const clearContainer = (element) => {
 const startProgram = () => {
     let form = document.getElementById("form")
     form.addEventListener('submit', Review.createReview)
-    
-    Review.fetchReviews
+
+    Review.fetchReviews()
 }
 
 
